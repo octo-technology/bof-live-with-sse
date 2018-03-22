@@ -41,9 +41,11 @@ repositories {
 dependencies {
     compile("org.apache.commons:commons-lang3:${commonsLang3Version}")
     compile('org.springframework.boot:spring-boot-starter-web')
+    compile("org.springframework.boot:spring-boot-starter-webflux")
 
     runtime('org.springframework.boot:spring-boot-devtools')
 
+    testCompile("io.projectreactor:reactor-test")
     testCompile('org.springframework.boot:spring-boot-starter-test') {
         // Exclude JUnit 4
         exclude group: 'junit'
