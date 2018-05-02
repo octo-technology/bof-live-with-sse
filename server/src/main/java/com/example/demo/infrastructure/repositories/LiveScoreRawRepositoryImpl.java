@@ -18,6 +18,7 @@ public class LiveScoreRawRepositoryImpl implements LiveScoreRawRepository {
     @Override
     public LiveScoreRaw find() {
         Integer randomInteger = scoreEndpoint.generateRandomInteger();
+        System.out.println("Score: " + randomInteger);
 
         return liveScoreRawImplFactory.create(randomInteger);
     }
