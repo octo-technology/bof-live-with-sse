@@ -80,7 +80,7 @@ class LiveScoreStreamerUTest {
         }
 
         @Test
-        void return_two_distinct_times_when_live_has_changed_and_waiting_two_periods_of_three_seconds() {
+        void return_two_distinct_live_scores_when_live_has_changed_and_waiting_two_periods_of_three_seconds() {
             // given
             LiveScore liveScore = newInstance(LiveScore.class);
             ReflectionTestUtils.setField(liveScore, "score", 1);
@@ -102,16 +102,16 @@ class LiveScoreStreamerUTest {
         }
 
         @Test
-        void return_only_keep_alive_events_after_the_first_time_event_when_time_does_not_change() {
+        void return_only_keep_alive_events_after_the_first_live_score_event_when_live_score_does_not_change() {
             // given
             LiveScore liveScore = newInstance(LiveScore.class);
             when(getLiveScore.execute()).thenReturn(liveScore);
 
             // when
-            Flux<ServerSentEvent<LiveScoreEvent>> parisTimeClock = liveScoreStreamer.getLive();
+            Flux<ServerSentEvent<LiveScoreEvent>> liveScoreEvent = liveScoreStreamer.getLive();
 
             // then
-            StepVerifier.withVirtualTime(() -> parisTimeClock, () -> virtualTimeScheduler, Long.MAX_VALUE)
+            StepVerifier.withVirtualTime(() -> liveScoreEvent, () -> virtualTimeScheduler, Long.MAX_VALUE)
                     .expectSubscription()
                     .thenAwait(ONE_SECOND)
                     .assertNext(serverSentEvent -> this.assertIsLiveEvent(serverSentEvent, liveScore))
@@ -125,7 +125,7 @@ class LiveScoreStreamerUTest {
         }
 
         @Test
-        void return_keep_alive_events_between_two_time_changes() {
+        void return_keep_alive_events_between_two_live_score_changes() {
             // given
             LiveScore liveScore = newInstance(LiveScore.class);
             ReflectionTestUtils.setField(liveScore, "score", 1);
@@ -142,10 +142,10 @@ class LiveScoreStreamerUTest {
                     .thenReturn(anotherLiveScore);
 
             // when
-            Flux<ServerSentEvent<LiveScoreEvent>> parisTimeClock = liveScoreStreamer.getLive();
+            Flux<ServerSentEvent<LiveScoreEvent>> liveScoreEvent = liveScoreStreamer.getLive();
 
             // then
-            StepVerifier.withVirtualTime(() -> parisTimeClock, () -> virtualTimeScheduler, Long.MAX_VALUE)
+            StepVerifier.withVirtualTime(() -> liveScoreEvent, () -> virtualTimeScheduler, Long.MAX_VALUE)
                     .expectSubscription()
                     .thenAwait(ONE_SECOND)
                     .assertNext(serverSentEvent -> this.assertIsLiveEvent(serverSentEvent, liveScore))
